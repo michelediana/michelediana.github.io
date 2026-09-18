@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Finch — Personal Finance Dashboard</title>
+<meta name="description" content="A private, local-first personal finance dashboard: track income, expenses, budgets and net worth.">
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<div class="app">
+
+  <header class="topbar">
+    <div class="brand">
+      <span class="brand-mark" aria-hidden="true">◆</span>
+      <span class="brand-name">Finch</span>
+    </div>
+
+    <div class="topbar-actions">
+      <div class="range-filter" role="group" aria-label="Date range">
+        <button type="button" class="range-btn" data-range="30">30D</button>
+        <button type="button" class="range-btn" data-range="90">90D</button>
+        <button type="button" class="range-btn" data-range="ytd">YTD</button>
+        <button type="button" class="range-btn is-active" data-range="all">All</button>
+      </div>
+      <button type="button" id="addTxnBtn" class="btn btn-primary">+ Add transaction</button>
+      <div class="menu">
+        <button type="button" id="menuBtn" class="btn btn-ghost" aria-haspopup="true" aria-expanded="false" title="More options">⋯</button>
+        <div id="menuPanel" class="menu-panel" hidden>
+          <button type="button" id="themeToggle" class="menu-item">Toggle theme</button>
+          <button type="button" id="exportBtn" class="menu-item">Export data (JSON)</button>
+          <label class="menu-item menu-item-file">Import data (JSON)
+            <input type="file" id="importInput" accept="application/json" hidden>
+          </label>
+          <button type="button" id="resetBtn" class="menu-item menu-item-danger">Reset sample data</button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="content">
+
+    <section class="kpi-row" id="kpiRow" aria-label="Key figures"></section>
+
+    <section class="charts-row">
+      <div class="card chart-card" id="balanceCard">
+        <div class="card-head">
+          <div>
+            <h2>Balance over time</h2>
+            <p class="card-sub" id="balanceSub"></p>
+          </div>
+        </div>
+        <div class="chart-wrap" id="balanceChart"></div>
+      </div>
+
+      <div class="card chart-card" id="ieCard">
+        <div class="card-head">
+          <div>
+            <h2>Income vs expenses</h2>
+            <p class="card-sub">By month</p>
+          </div>
+          <div class="legend" id="ieLegend"></div>
+        </div>
+        <div class="chart-wrap" id="ieChart"></div>
+      </div>
+    </section>
+
+    <section class="lower-row">
+      <div class="card" id="categoryCard">
+        <div class="card-head">
+          <div>
+            <h2>Spending by category</h2>
+            <p class="card-sub" id="categorySub"></p>
+          </div>
+        </div>
+        <div id="categoryChart"></div>
+      </div>
+
+      <div class="card" id="budgetCard">
+        <div class="card-head">
+          <div>
+            <h2>Monthly budgets</h2>
+            <p class="card-sub">Current calendar month</p>
+          </div>
+          <button type="button" id="editBudgetsBtn" class="btn btn-ghost btn-sm">Edit</button>
+        </div>
+        <div id="budgetList"></div>
+      </div>
+    </section>
+
+    <section class="card" id="txnCard">
+      <div class="card-head">
+        <div>
+          <h2>Transactions</h2>
+          <p class="card-sub" id="txnSub"></p>
+        </div>
+        <div class="txn-controls">
+          <input type="search" id="txnSearch" placeholder="Search description…" aria-label="Search transactions">
+          <select id="txnCategoryFilter" aria-label="Filter by category">
+            <option value="all">All categories</option>
+          </select>
+          <select id="txnTypeFilter" aria-label="Filter by type">
+            <option value="all">All types</option>
+            <option value="income">Income</option>
+            <option value="expense">Expense</option>
+          </select>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table id="txnTable">
+          <thead>
+            <tr>
+              <th data-sort="date" class="is-sorted" aria-sort="descending">Date</th>
+              <th data-sort="description">Description</th>
+              <th data-sort="category">Category</th>
+              <th data-sort="amount" class="num">Amount</th>
+              <th class="col-actions"></th>
+            </tr>
+          </thead>
+          <tbody id="txnTableBody"></tbody>
+        </table>
+        <p id="txnEmpty" class="empty-state" hidden>No transactions match your filters.</p>
+      </div>
+    </section>
+
+    <footer class="app-footer">
+      <p>Finch stores everything locally in your browser (localStorage). Nothing is uploaded anywhere — export a backup from the menu anytime.</p>
+    </footer>
+
+  </main>
+</div>
+
+<dialog id="txnDialog" class="dialog">
+  <form id="txnForm" method="dialog">
+    <h2 id="txnDialogTitle">Add transaction</h2>
+    <input type="hidden" id="txnId">
+    <label class="field">Description
+      <input type="text" id="txnDesc" required maxlength="80" placeholder="e.g. Groceries">
+    </label>
+    <div class="form-row">
+      <label class="field">Amount
+        <input type="number" id="txnAmount" step="0.01" min="0.01" required placeholder="0.00">
+      </label>
+      <label class="field">Type
+        <select id="txnType">
+          <option value="expense">Expense</option>
+          <option value="income">Income</option>
+        </select>
+      </label>
+    </div>
+    <div class="form-row">
+      <label class="field">Category
+        <select id="txnCategory"></select>
+      </label>
+      <label class="field">Date
+        <input type="date" id="txnDate" required>
+      </label>
+    </div>
+    <div class="dialog-actions">
+      <button type="button" id="txnDelete" class="btn btn-ghost menu-item-danger" hidden>Delete</button>
+      <span class="spacer"></span>
+      <button type="button" id="txnCancel" class="btn btn-ghost">Cancel</button>
+      <button type="submit" class="btn btn-primary">Save</button>
+    </div>
+  </form>
+</dialog>
+
+<dialog id="budgetDialog" class="dialog">
+  <form id="budgetForm" method="dialog">
+    <h2>Edit monthly budgets</h2>
+    <p class="card-sub">Set a monthly limit per expense category. Leave blank for no budget.</p>
+    <div id="budgetFormFields" class="budget-fields"></div>
+    <div class="dialog-actions">
+      <span class="spacer"></span>
+      <button type="button" id="budgetCancel" class="btn btn-ghost">Cancel</button>
+      <button type="submit" class="btn btn-primary">Save</button>
+    </div>
+  </form>
+</dialog>
+
+<div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+
+<script src="assets/app.js"></script>
+</body>
+</html>
