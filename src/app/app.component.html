@@ -1,0 +1,27 @@
+<div class="app">
+  <app-topbar (addTransaction)="openAddTransaction()" />
+
+  <main class="content">
+    <app-kpi-row />
+
+    <section class="charts-row">
+      <app-balance-chart />
+      <app-income-expense-chart />
+    </section>
+
+    <section class="lower-row">
+      <app-category-breakdown />
+      <app-budget-list (editRequested)="openBudgetDialog()" />
+    </section>
+
+    <app-transactions-table (editRequested)="openEditTransaction($event)" />
+
+    <footer class="app-footer">
+      <p>Finch stores everything locally in your browser (localStorage). Nothing is uploaded anywhere — export a backup from the menu anytime.</p>
+    </footer>
+  </main>
+</div>
+
+<app-transaction-dialog />
+<app-budget-dialog />
+<app-toast />

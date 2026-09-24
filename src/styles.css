@@ -252,18 +252,18 @@ svg.chart { display: block; overflow: visible; }
 }
 .txn-controls input { min-width: 180px; }
 .table-wrap { overflow-x: auto; }
-#txnTable th {
+.table-wrap th {
   text-align: left; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em;
   color: var(--text-muted); font-weight: 700; padding: 8px 10px; border-bottom: 1px solid var(--border);
   cursor: pointer; user-select: none; white-space: nowrap;
 }
-#txnTable th:hover { color: var(--text-secondary); }
-#txnTable th.is-sorted { color: var(--text-primary); }
-#txnTable th.is-sorted::after { content: " ▾"; font-size: 9px; }
-#txnTable th.is-sorted[aria-sort="ascending"]::after { content: " ▴"; }
-#txnTable th.num, #txnTable td.num { text-align: right; }
-#txnTable td { padding: 9px 10px; border-bottom: 1px solid var(--border); font-size: 13px; vertical-align: middle; }
-#txnTable tbody tr:hover { background: var(--page); }
+.table-wrap th:hover { color: var(--text-secondary); }
+.table-wrap th.is-sorted { color: var(--text-primary); }
+.table-wrap th.is-sorted::after { content: " ▾"; font-size: 9px; }
+.table-wrap th.is-sorted[aria-sort="ascending"]::after { content: " ▴"; }
+.table-wrap th.num, .table-wrap td.num { text-align: right; }
+.table-wrap td { padding: 9px 10px; border-bottom: 1px solid var(--border); font-size: 13px; vertical-align: middle; }
+.table-wrap tbody tr:hover { background: var(--page); }
 .txn-amount.income { color: var(--success-text); font-weight: 700; font-variant-numeric: tabular-nums; }
 .txn-amount.expense { color: var(--text-primary); font-weight: 700; font-variant-numeric: tabular-nums; }
 .txn-cat-chip { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: var(--text-secondary); }
